@@ -29,8 +29,8 @@ def convert_drive_link(link):
     return f"https://drive.google.com/thumbnail?id={file_id}"
 
 # Cargar el archivo CSV de rutas y el archivo de datos de baches
-csv_path = 'F:/Programas/GitHub Desktop/Pothole_Proyect/Street_Sweeping_Schedule_20241105.csv'
-pothole_data_path = 'F:/Programas/GitHub Desktop/Pothole_Proyect/pothole_data.csv'  # Nueva fuente de datos de baches
+csv_path = './Street_Sweeping_Schedule_20241105.csv'
+pothole_data_path = './pothole_data.csv'  # Nueva fuente de datos de baches
 sweeping_schedule_df = pd.read_csv(csv_path)
 pothole_data = pd.read_csv(pothole_data_path)
 
