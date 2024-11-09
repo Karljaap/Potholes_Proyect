@@ -2,7 +2,7 @@
 ## Install
 ##--------------------------------------------------------------------------------------------------------------------##
 
-# Install necessary libraries
+# Install necessary libraries (if needed)
 # %pip install folium geopandas shapely streamlit-folium pandas streamlit
 
 ##--------------------------------------------------------------------------------------------------------------------##
@@ -71,16 +71,16 @@ for idx, row in sample_points.iterrows():
         color_intensity = int((severity_score / 100) * 255)  # Scale 0-255
         color = f'#{color_intensity:02x}{255 - color_intensity:02x}00'  # Gradient from green to red
 
-        # Create a marker with CircleMarker and image link
+        # Create a marker with CircleMarker and larger image link
         folium.CircleMarker(
             location=[point[1], point[0]],  # Coordinates (lat, lon)
-            radius=7,  # Circle radius
+            radius=10,  # Larger circle radius
             color=color,  # Border color
             fill=True,
             fill_color=color,  # Fill color based on severity_score
             fill_opacity=0.7,
-            popup=f"<img src='{image_link}' width='150'>" if image_link else "Pothole",  # Image from converted link
-            tooltip=f"Severity Score: {severity_score}"  # Show score in tooltip
+            popup=f"<div style='text-align: center;'><img src='{image_link}' width='250'><br><b>Severity Score:</b> {severity_score}</div>" if image_link else f"<b>Pothole<br>Severity Score:</b> {severity_score}",  # Larger image and score text
+            tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
 # Create the Streamlit interface
@@ -89,3 +89,7 @@ st.write("This map shows pothole points in San Francisco. The color indicates se
 
 # Display the Folium map in Streamlit
 st_folium(mapa, width=700, height=500)
+
+# Display a DataFrame for user interaction
+st.subheader("Pothole Data Table")
+st.dataframe(pothole_data)
