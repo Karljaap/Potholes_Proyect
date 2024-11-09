@@ -83,6 +83,22 @@ for idx, row in sample_points.iterrows():
             tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
+# Style adjustments to remove padding/margin
+st.markdown(
+    """
+    <style>
+    .css-18e3th9 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .css-1d391kg {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Create the Streamlit interface
 st.title("Pothole Map in San Francisco")
