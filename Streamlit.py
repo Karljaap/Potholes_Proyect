@@ -7,7 +7,7 @@
 
 ##--------------------------------------------------------------------------------------------------------------------##
 ## Library
-##--------------------------------------------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------------------------------------------####
 
 import os
 import streamlit as st
@@ -103,5 +103,9 @@ if 'location' in pothole_data.columns:
     if selected_location != "All":
         filtered_data = filtered_data[filtered_data['location'] == selected_location]
 
-# Display filtered data
+# Select specific columns to display
+columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
+filtered_data = filtered_data[columns_to_display]
+
+# Display filtered data with selected columns
 st.dataframe(filtered_data)
