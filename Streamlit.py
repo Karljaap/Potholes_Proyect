@@ -116,6 +116,6 @@ filtered_data = filtered_data[columns_to_display]
 # Display filtered data with selected columns
 st.dataframe(filtered_data)
 
-# Button to reset filters (refresh the page)
+# Simple button to reset filters by clearing session state (if needed)
 if st.button("Reset Filters"):
-    st.experimental_rerun()
+    st.session_state.clear()
