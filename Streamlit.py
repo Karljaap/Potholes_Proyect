@@ -86,7 +86,7 @@ for idx, row in sample_points.iterrows():
 
 # Create the Streamlit interface
 st.title("Pothole Map in San Francisco")
-st.write("This map shows pothole points in San Francisco. The color indicates severity (red = high priority, green = low priority).")
+st.write("this is a dashboard for pothole detection using images from Autonomus Vehicles")
 
 # Display the Folium map in Streamlit
 st_folium(mapa, width=700, height=500)
