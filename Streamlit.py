@@ -3,7 +3,7 @@
 ##--------------------------------------------------------------------------------------------------------------------##
 
 # Install necessary libraries (if needed)
-# %pip install folium geopandas shapely streamlit-folium pandas streamlit
+# %pip install folium geopandas shapely streamlit-folium pandas streamlit matplotlib
 
 ##--------------------------------------------------------------------------------------------------------------------##
 ## Library
@@ -15,6 +15,7 @@ import folium
 import pandas as pd
 import geopandas as gpd
 import random
+import matplotlib.pyplot as plt
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 from shapely import wkt
@@ -97,9 +98,11 @@ st.subheader("Interactive Pothole Data Table")
 min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
 filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
 
-# Filter by damaged area using a range slider
-min_damaged_area, max_damaged_area = st.slider("Select damaged area range", int(pothole_data['damaged_area'].min()), int(pothole_data['damaged_area'].max()), (0, int(pothole_data['damaged_area'].max())))
-filtered_data = filtered_data[(filtered_data['damaged_area'] >= min_damaged_area) & (filtered_data['damaged_area'] <= max_damaged_area)]
+# Filter by damaged area using cuartiles
+quartiles = pd.qcut(pothole_data['damaged_area'], 4, labels=["Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
+selected_quartile = st.selectbox("Select damaged area quartile", options=["All", "Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
+if selected_quartile != "All":
+    filtered_data = filtered_data[quartiles == selected_quartile]
 
 # Filter by number of potholes using a range slider
 min_potholes, max_potholes = st.slider("Select number of potholes range", int(pothole_data['num_potholes'].min()), int(pothole_data['num_potholes'].max()), (0, int(pothole_data['num_potholes'].max())))
@@ -116,3 +119,32 @@ filtered_data = filtered_data[columns_to_display]
 
 # Display filtered data with selected columns
 st.dataframe(filtered_data)
+
+# Descriptive Charts
+st.subheader("Descriptive Statistics and Visualizations")
+
+# Histogram of severity_score
+st.write("Distribution of Severity Score")
+fig, ax = plt.subplots()
+ax.hist(pothole_data['severity_score'], bins=20, color='skyblue', edgecolor='black')
+ax.set_xlabel('Severity Score')
+ax.set_ylabel('Frequency')
+ax.set_title('Histogram of Severity Score')
+st.pyplot(fig)
+
+# Boxplot of damaged_area
+st.write("Boxplot of Damaged Area")
+fig, ax = plt.subplots()
+ax.boxplot(pothole_data['damaged_area'], vert=False, patch_artist=True)
+ax.set_xlabel('Damaged Area')
+ax.set_title('Boxplot of Damaged Area')
+st.pyplot(fig)
+
+# Bar chart of urban/rural classification
+st.write("Urban/Rural Classification Count")
+fig, ax = plt.subplots()
+pothole_data['urban/rural'].value_counts().plot(kind='bar', ax=ax, color=['lightgreen', 'coral'])
+ax.set_xlabel('Urban/Rural')
+ax.set_ylabel('Count')
+ax.set_title('Count of Urban/Rural Classification')
+st.pyplot(fig)
