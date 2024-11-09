@@ -7,7 +7,7 @@
 
 ##--------------------------------------------------------------------------------------------------------------------##
 ## Library
-##----------------------------------------------------------------------------------------------------------------####
+##--------------------------------------------------------------------------------------------------------------------##
 
 import os
 import streamlit as st
@@ -90,18 +90,24 @@ st.write("This map shows pothole points in San Francisco. The color indicates se
 # Display the Folium map in Streamlit
 st_folium(mapa, width=700, height=500)
 
-# Dynamic filtering and Data Table
+# Dynamic filtering and Data Table with more interactivity
 st.subheader("Interactive Pothole Data Table")
-# Filter by severity score
+
+# Filter by severity score using a slider
 min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
 filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
 
-# Optional filter by location (assuming there is a 'location' column)
+# Filter by multiple locations (assuming there is a 'location' column)
 if 'location' in pothole_data.columns:
     unique_locations = pothole_data['location'].unique()
-    selected_location = st.selectbox("Select a location", options=["All"] + list(unique_locations))
-    if selected_location != "All":
-        filtered_data = filtered_data[filtered_data['location'] == selected_location]
+    selected_locations = st.multiselect("Select locations", options=unique_locations, default=unique_locations)
+    if selected_locations:
+        filtered_data = filtered_data[filtered_data['location'].isin(selected_locations)]
+
+# Optional search by image_id
+search_term = st.text_input("Search by image_id")
+if search_term:
+    filtered_data = filtered_data[filtered_data['image_id'].str.contains(search_term, case=False, na=False)]
 
 # Select specific columns to display
 columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
@@ -109,3 +115,7 @@ filtered_data = filtered_data[columns_to_display]
 
 # Display filtered data with selected columns
 st.dataframe(filtered_data)
+
+# Button to reset filters (refresh the page)
+if st.button("Reset Filters"):
+    st.experimental_rerun()
