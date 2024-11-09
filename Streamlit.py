@@ -90,6 +90,18 @@ st.write("This map shows pothole points in San Francisco. The color indicates se
 # Display the Folium map in Streamlit
 st_folium(mapa, width=700, height=500)
 
-# Display a DataFrame for user interaction
-st.subheader("Pothole Data Table")
-st.dataframe(pothole_data)
+# Dynamic filtering and Data Table
+st.subheader("Interactive Pothole Data Table")
+# Filter by severity score
+min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
+filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
+
+# Optional filter by location (assuming there is a 'location' column)
+if 'location' in pothole_data.columns:
+    unique_locations = pothole_data['location'].unique()
+    selected_location = st.selectbox("Select a location", options=["All"] + list(unique_locations))
+    if selected_location != "All":
+        filtered_data = filtered_data[filtered_data['location'] == selected_location]
+
+# Display filtered data
+st.dataframe(filtered_data)
