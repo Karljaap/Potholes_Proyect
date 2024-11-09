@@ -83,38 +83,42 @@ for idx, row in sample_points.iterrows():
             tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
-# Create the Streamlit interface
-st.title("Pothole Map in San Francisco")
-st.write("This is a dashboard for pothole detection using images from Autonomous Vehicles. The object detection involves pointing out and delineating the exact shapes of individual objects in an image. The results include precise masks for each object expressed in areas, accompanied by labels and severity scores to indicate the seriousness of the gap. The YOLOv8-seg model has been used, which offers high accuracy in real-time applications. If you need any further assistance or modifications, feel free to ask!")
+# Create the Streamlit interface with tabs
+st.title("Pothole Detection Dashboard")
 
-# Display the Folium map in Streamlit with adjusted size to reduce space
-st_folium(mapa, width=700, height=600)  # Adjusted height to reduce space
+tabs = st.tabs(["Map", "Interactive Data Table"])
 
-# Dynamic filtering and Data Table with more interactivity
-st.subheader("Interactive Pothole Data Table")
+with tabs[0]:
+    st.write("This is a dashboard for pothole detection using images from Autonomous Vehicles. The object detection involves pointing out and delineating the exact shapes of individual objects in an image. The results include precise masks for each object expressed in areas, accompanied by labels and severity scores to indicate the seriousness of the gap. The YOLOv8-seg model has been used, which offers high accuracy in real-time applications. If you need any further assistance or modifications, feel free to ask!")
+    
+    # Display the Folium map in Streamlit
+    st_folium(mapa, width=700, height=600)  # Adjusted height to reduce space
 
-# Filter by severity score using a slider
-min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
-filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
-
-# Filter by damaged area using cuartiles
-quartiles = pd.qcut(pothole_data['damaged_area'], 4, labels=["Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
-selected_quartile = st.selectbox("Select damaged area quartile", options=["All", "Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
-if selected_quartile != "All":
-    filtered_data = filtered_data[quartiles == selected_quartile]
-
-# Filter by number of potholes using a range slider
-min_potholes, max_potholes = st.slider("Select number of potholes range", int(pothole_data['num_potholes'].min()), int(pothole_data['num_potholes'].max()), (0, int(pothole_data['num_potholes'].max())))
-filtered_data = filtered_data[(filtered_data['num_potholes'] >= min_potholes) & (filtered_data['num_potholes'] <= max_potholes)]
-
-# Filter by urban/rural using a selectbox
-urban_rural_filter = st.selectbox("Select urban/rural classification", options=["All", 0, 1], index=0)
-if urban_rural_filter != "All":
-    filtered_data = filtered_data[filtered_data['urban/rural'] == urban_rural_filter]
-
-# Select specific columns to display
-columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
-filtered_data = filtered_data[columns_to_display]
-
-# Display filtered data with selected columns
-st.dataframe(filtered_data)
+with tabs[1]:
+    st.subheader("Interactive Pothole Data Table")
+    
+    # Filter by severity score using a slider
+    min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
+    filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
+    
+    # Filter by damaged area using cuartiles
+    quartiles = pd.qcut(pothole_data['damaged_area'], 4, labels=["Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
+    selected_quartile = st.selectbox("Select damaged area quartile", options=["All", "Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
+    if selected_quartile != "All":
+        filtered_data = filtered_data[quartiles == selected_quartile]
+    
+    # Filter by number of potholes using a range slider
+    min_potholes, max_potholes = st.slider("Select number of potholes range", int(pothole_data['num_potholes'].min()), int(pothole_data['num_potholes'].max()), (0, int(pothole_data['num_potholes'].max())))
+    filtered_data = filtered_data[(filtered_data['num_potholes'] >= min_potholes) & (filtered_data['num_potholes'] <= max_potholes)]
+    
+    # Filter by urban/rural using a selectbox
+    urban_rural_filter = st.selectbox("Select urban/rural classification", options=["All", 0, 1], index=0)
+    if urban_rural_filter != "All":
+        filtered_data = filtered_data[filtered_data['urban/rural'] == urban_rural_filter]
+    
+    # Select specific columns to display
+    columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
+    filtered_data = filtered_data[columns_to_display]
+    
+    # Display filtered data with selected columns
+    st.dataframe(filtered_data)
