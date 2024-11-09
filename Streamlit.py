@@ -97,17 +97,18 @@ st.subheader("Interactive Pothole Data Table")
 min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
 filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
 
-# Filter by multiple locations (assuming there is a 'location' column)
-if 'location' in pothole_data.columns:
-    unique_locations = pothole_data['location'].unique()
-    selected_locations = st.multiselect("Select locations", options=unique_locations, default=unique_locations)
-    if selected_locations:
-        filtered_data = filtered_data[filtered_data['location'].isin(selected_locations)]
+# Filter by damaged area using a range slider
+min_damaged_area, max_damaged_area = st.slider("Select damaged area range", int(pothole_data['damaged_area'].min()), int(pothole_data['damaged_area'].max()), (0, int(pothole_data['damaged_area'].max())))
+filtered_data = filtered_data[(filtered_data['damaged_area'] >= min_damaged_area) & (filtered_data['damaged_area'] <= max_damaged_area)]
 
-# Optional search by image_id
-search_term = st.text_input("Search by image_id")
-if search_term:
-    filtered_data = filtered_data[filtered_data['image_id'].str.contains(search_term, case=False, na=False)]
+# Filter by number of potholes using a range slider
+min_potholes, max_potholes = st.slider("Select number of potholes range", int(pothole_data['num_potholes'].min()), int(pothole_data['num_potholes'].max()), (0, int(pothole_data['num_potholes'].max())))
+filtered_data = filtered_data[(filtered_data['num_potholes'] >= min_potholes) & (filtered_data['num_potholes'] <= max_potholes)]
+
+# Filter by urban/rural using a selectbox
+urban_rural_filter = st.selectbox("Select urban/rural classification", options=["All", 0, 1], index=0)
+if urban_rural_filter != "All":
+    filtered_data = filtered_data[filtered_data['urban/rural'] == urban_rural_filter]
 
 # Select specific columns to display
 columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
@@ -115,7 +116,3 @@ filtered_data = filtered_data[columns_to_display]
 
 # Display filtered data with selected columns
 st.dataframe(filtered_data)
-
-# Simple button to reset filters by clearing session state (if needed)
-if st.button("Reset Filters"):
-    st.session_state.clear()
