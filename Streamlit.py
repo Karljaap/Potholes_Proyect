@@ -105,7 +105,7 @@ st.title("Pothole Map in San Francisco")
 st.write("This map shows pothole points in San Francisco. The color indicates severity (red = high priority, green = low priority).")
 
 # Display the Folium map in Streamlit with adjusted size to reduce space
-st_folium(mapa, width=700, height=400)  # Adjusted height to reduce space
+st_folium(mapa, width=700, height=500)  # Adjusted height to reduce space
 
 # Dynamic filtering and Data Table with more interactivity
 st.subheader("Interactive Pothole Data Table")
