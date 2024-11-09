@@ -3,7 +3,7 @@
 ##--------------------------------------------------------------------------------------------------------------------##
 
 # Install necessary libraries (if needed)
-# %pip install folium geopandas shapely streamlit-folium pandas streamlit matplotlib
+# %pip install folium geopandas shapely streamlit-folium pandas streamlit
 
 ##--------------------------------------------------------------------------------------------------------------------##
 ## Library
@@ -15,7 +15,6 @@ import folium
 import pandas as pd
 import geopandas as gpd
 import random
-import matplotlib.pyplot as plt
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 from shapely import wkt
@@ -84,12 +83,29 @@ for idx, row in sample_points.iterrows():
             tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
+# Style adjustments to remove padding/margin
+st.markdown(
+    """
+    <style>
+    .css-18e3th9 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .css-1d391kg {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Create the Streamlit interface
 st.title("Pothole Map in San Francisco")
-st.write("this is a dashboard for pothole detection using images from Autonomus Vehicles")
+st.write("This map shows pothole points in San Francisco. The color indicates severity (red = high priority, green = low priority).")
 
-# Display the Folium map in Streamlit
-st_folium(mapa, width=700, height=500)
+# Display the Folium map in Streamlit with adjusted size to reduce space
+st_folium(mapa, width=700, height=400)  # Adjusted height to reduce space
 
 # Dynamic filtering and Data Table with more interactivity
 st.subheader("Interactive Pothole Data Table")
@@ -119,32 +135,3 @@ filtered_data = filtered_data[columns_to_display]
 
 # Display filtered data with selected columns
 st.dataframe(filtered_data)
-
-# Descriptive Charts
-st.subheader("Descriptive Statistics and Visualizations")
-
-# Histogram of severity_score
-st.write("Distribution of Severity Score")
-fig, ax = plt.subplots()
-ax.hist(pothole_data['severity_score'], bins=20, color='skyblue', edgecolor='black')
-ax.set_xlabel('Severity Score')
-ax.set_ylabel('Frequency')
-ax.set_title('Histogram of Severity Score')
-st.pyplot(fig)
-
-# Boxplot of damaged_area
-st.write("Boxplot of Damaged Area")
-fig, ax = plt.subplots()
-ax.boxplot(pothole_data['damaged_area'], vert=False, patch_artist=True)
-ax.set_xlabel('Damaged Area')
-ax.set_title('Boxplot of Damaged Area')
-st.pyplot(fig)
-
-# Bar chart of urban/rural classification
-st.write("Urban/Rural Classification Count")
-fig, ax = plt.subplots()
-pothole_data['urban/rural'].value_counts().plot(kind='bar', ax=ax, color=['lightgreen', 'coral'])
-ax.set_xlabel('Urban/Rural')
-ax.set_ylabel('Count')
-ax.set_title('Count of Urban/Rural Classification')
-st.pyplot(fig)
