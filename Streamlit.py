@@ -86,7 +86,7 @@ for idx, row in sample_points.iterrows():
 # Create the Streamlit interface with tabs
 st.title("Pothole Detection Dashboard")
 
-tabs = st.tabs(["Map", "Interactive Data Table"])
+tabs = st.tabs(["San Francisco Map", "Interactive Data Table"])
 
 with tabs[0]:
     st.write("This is a dashboard for pothole detection using images from Autonomous Vehicles. The object detection involves pointing out and delineating the exact shapes of individual objects in an image. The results include precise masks for each object expressed in areas, accompanied by labels and severity scores to indicate the seriousness of the gap. The YOLOv8-seg model has been used, which offers high accuracy in real-time applications. If you need any further assistance or modifications, feel free to ask!")
