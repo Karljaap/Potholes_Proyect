@@ -1,6 +1,6 @@
 ##--------------------------------------------------------------------------------------------------------------------##
 ## Library
-##--------------------------------------------------------------------------------------------------------------------## 
+##----------------------------------------------------------------------------------------------------------------## 
 
 import os
 import streamlit as st
@@ -76,6 +76,12 @@ for idx, row in sample_points.iterrows():
             tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
+# Ensure latitude and longitude columns exist in pothole_data
+if 'latitude' not in pothole_data.columns or 'longitude' not in pothole_data.columns:
+    # Generate random latitude and longitude for demonstration (replace with actual data if available)
+    pothole_data['latitude'] = [random.uniform(37.7, 37.8) for _ in range(len(pothole_data))]
+    pothole_data['longitude'] = [random.uniform(-122.5, -122.4) for _ in range(len(pothole_data))]
+
 # Create the Streamlit interface with tabs
 st.title("Pothole Detection Dashboard")
 
@@ -94,7 +100,7 @@ with tabs[1]:
     min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
     filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
     
-    # Filter by damaged area using cuartiles
+    # Filter by damaged area using quartiles
     quartiles = pd.qcut(pothole_data['damaged_area'], 4, labels=["Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
     selected_quartile = st.selectbox("Select damaged area quartile", options=["All", "Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
     if selected_quartile != "All":
@@ -110,6 +116,17 @@ with tabs[1]:
         filtered_data = filtered_data[filtered_data['urban/rural'] == urban_rural_filter]
     
     # Select specific columns to display and rename them
-    columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score', 'latitude', 'longitude']
-    if 'latitude' in pothole_data.columns and 'longitude' in pothole_data.columns:
-        filtered_data = filtered
+    columns_to_display = ['image_id', 'latitude', 'longitude', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
+    filtered_data = filtered_data[columns_to_display]
+    filtered_data = filtered_data.rename(columns={
+        'image_id': 'image id',
+        'latitude': 'latitude',
+        'longitude': 'longitude',
+        'damaged_area': 'damaged area',
+        'num_potholes': 'num potholes',
+        'urban/rural': 'urban/rural',
+        'severity_score': 'severity score'
+    })
+    
+    # Display filtered data with selected columns
+    st.dataframe(filtered_data)
