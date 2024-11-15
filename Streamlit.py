@@ -1,13 +1,6 @@
 ##--------------------------------------------------------------------------------------------------------------------##
-## Install
-##--------------------------------------------------------------------------------------------------------------------##
-
-# Install necessary libraries (if needed)
-# %pip install folium geopandas shapely streamlit-folium pandas streamlit
-
-##--------------------------------------------------------------------------------------------------------------------##
 ## Library
-##----------------------------------------------------------------------------------------------------------------## 
+##--------------------------------------------------------------------------------------------------------------------## 
 
 import os
 import streamlit as st
@@ -117,15 +110,6 @@ with tabs[1]:
         filtered_data = filtered_data[filtered_data['urban/rural'] == urban_rural_filter]
     
     # Select specific columns to display and rename them
-    columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score']
-    filtered_data = filtered_data[columns_to_display]
-    filtered_data = filtered_data.rename(columns={
-        'image_id': 'image id',
-        'damaged_area': 'damaged area',
-        'num_potholes': 'num potholes',
-        'urban/rural': 'urban/rural',
-        'severity_score': 'severity score'
-    })
-    
-    # Display filtered data with selected columns
-    st.dataframe(filtered_data)
+    columns_to_display = ['image_id', 'damaged_area', 'num_potholes', 'urban/rural', 'severity_score', 'latitude', 'longitude']
+    if 'latitude' in pothole_data.columns and 'longitude' in pothole_data.columns:
+        filtered_data = filtered
