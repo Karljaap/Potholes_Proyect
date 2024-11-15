@@ -1,14 +1,3 @@
-##--------------------------------------------------------------------------------------------------------------------##
-## Install
-##--------------------------------------------------------------------------------------------------------------------##
-
-# Install necessary libraries (if needed)
-# %pip install folium geopandas shapely streamlit-folium pandas streamlit
-
-##--------------------------------------------------------------------------------------------------------------------##
-## Library
-##----------------------------------------------------------------------------------------------------------------## 
-
 import os
 import streamlit as st
 import folium
@@ -18,10 +7,6 @@ import random
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 from shapely import wkt
-
-##--------------------------------------------------------------------------------------------------------------------##
-## Codes
-##--------------------------------------------------------------------------------------------------------------------##
 
 # Function to convert Google Drive link to appropriate thumbnail format
 def convert_drive_link(link):
@@ -59,6 +44,7 @@ for idx, row in sample_points.iterrows():
     # Get the coordinates of the first point of each line (LINESTRING)
     if row['geometry'] and row['geometry'].geom_type == 'LineString':
         point = row['geometry'].coords[0]  # First point of the line
+        latitude, longitude = point[1], point[0]  # Extract lat and lon
 
         # Select a random pothole image link from converted links (if exists)
         image_row = pothole_data.sample(n=1, random_state=random.randint(0, 1000)).iloc[0]
@@ -73,13 +59,20 @@ for idx, row in sample_points.iterrows():
 
         # Create a marker with CircleMarker and larger image link
         folium.CircleMarker(
-            location=[point[1], point[0]],  # Coordinates (lat, lon)
+            location=[latitude, longitude],  # Coordinates (lat, lon)
             radius=10,  # Larger circle radius
             color=color,  # Border color
             fill=True,
             fill_color=color,  # Fill color based on severity_score
             fill_opacity=0.7,
-            popup=f"<div style='text-align: center;'><img src='{image_link}' width='250'><br><b>Severity Score:</b> {severity_score}</div>" if image_link else f"<b>Pothole<br>Severity Score:</b> {severity_score}",  # Larger image and score text
+            popup=f"""
+                <div style='text-align: center;'>
+                    <img src='{image_link}' width='250'><br>
+                    <b>Severity Score:</b> {severity_score}<br>
+                    <b>Latitude:</b> {latitude:.6f}<br>
+                    <b>Longitude:</b> {longitude:.6f}
+                </div>
+            """ if image_link else f"<b>Pothole<br>Severity Score:</b> {severity_score}<br><b>Latitude:</b> {latitude:.6f}<br><b>Longitude:</b> {longitude:.6f}",  # Larger image and score text
             tooltip=f"Severity Score: {severity_score}"  # Display score in tooltip
         ).add_to(mapa)
 
@@ -101,7 +94,7 @@ with tabs[1]:
     min_score, max_score = st.slider("Select severity score range", int(pothole_data['severity_score'].min()), int(pothole_data['severity_score'].max()), (0, 100))
     filtered_data = pothole_data[(pothole_data['severity_score'] >= min_score) & (pothole_data['severity_score'] <= max_score)]
     
-    # Filter by damaged area using cuartiles
+    # Filter by damaged area using quartiles
     quartiles = pd.qcut(pothole_data['damaged_area'], 4, labels=["Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
     selected_quartile = st.selectbox("Select damaged area quartile", options=["All", "Q1 (0-25%)", "Q2 (25-50%)", "Q3 (50-75%)", "Q4 (75-100%)"])
     if selected_quartile != "All":
